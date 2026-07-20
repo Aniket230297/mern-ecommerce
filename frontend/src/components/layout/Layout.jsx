@@ -1,18 +1,17 @@
-
-import Navbar from "./Navbar";
-import Footer from "./Footer";
+import Navbar from "../layout/Navbar"
+import Footer from "../layout/Footer";
 
 function Layout({ children }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <Navbar />
 
-      <main className="flex-1">
+      <main className="min-h-screen">
         {children}
       </main>
 
       <Footer />
-    </div>
+    </>
   );
 }
 

@@ -13,7 +13,7 @@ export const placeOrder = async (req, res) => {
     } = req.body;
 
     const cart = await Cart.findOne({ user: req.user._id }).populate(
-      "items.product"
+      "items.product",
     );
 
     if (!cart || cart.items.length === 0) {
@@ -120,14 +120,37 @@ export const updateOrderStatus = async (req, res) => {
     if (orderStatus === "Delivered") {
       order.isDelivered = true;
       order.deliveredAt = new Date();
-    }
 
+      if (order.paymentMethod === "ONLINE") {
+        order.isPaid = true;
+        order.paidAt = new Date();
+      }
+    }
     await order.save();
 
     res.status(200).json({
       success: true,
       message: "Order status updated.",
       order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("user", "name email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      orders,
     });
   } catch (error) {
     res.status(500).json({

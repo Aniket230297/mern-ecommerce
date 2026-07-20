@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import API from "../api/axios";
 import { useAuth } from "../context/AuthContext";
@@ -39,11 +40,7 @@ function Login() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        name="email"
-        placeholder="Email"
-        onChange={handleChange}
-      />
+      <input name="email" placeholder="Email" onChange={handleChange} />
 
       <input
         type="password"
@@ -53,6 +50,12 @@ function Login() {
       />
 
       <button>Login</button>
+      <p className="text-center mt-5">
+        Don't have an account?{" "}
+        <Link to="/register" className="text-blue-600 font-semibold">
+          Register
+        </Link>
+      </p>
     </form>
   );
 }
