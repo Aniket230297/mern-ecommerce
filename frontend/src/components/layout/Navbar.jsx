@@ -10,12 +10,14 @@ function Navbar() {
   const { user, logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [keyword, setKeyword] = useState("");
+
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+const handleLogout = () => {
+    setShowMenu(false);
     logout();
     navigate("/login");
-  };
+};  
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow">
@@ -167,6 +169,41 @@ function Navbar() {
 
       {open && (
         <div className="md:hidden border-t">
+          <div className="p-4 border-b">
+            <div className="flex border rounded-lg overflow-hidden">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                className="w-full px-3 py-2 outline-none"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && keyword.trim()) {
+                    navigate(
+                      `/products?keyword=${encodeURIComponent(keyword)}`,
+                    );
+                    setKeyword("");
+                    setOpen(false);
+                  }
+                }}
+              />
+
+              <button
+                onClick={() => {
+                  if (keyword.trim()) {
+                    navigate(
+                      `/products?keyword=${encodeURIComponent(keyword)}`,
+                    );
+                    setKeyword("");
+                    setOpen(false);
+                  }
+                }}
+                className="bg-blue-600 text-white px-4"
+              >
+                <Search size={18} />
+              </button>
+            </div>
+          </div>
           <Link
             className="block px-4 py-3"
             to="/"

@@ -22,13 +22,19 @@ function Products() {
 
   const [searchParams] = useSearchParams();
 
-const [keyword, setKeyword] = useState(
-  searchParams.get("keyword") || ""
-);;
+  const [keyword, setKeyword] = useState(
+    searchParams.get("keyword") || ""
+  );;
+  // const keyword = searchParams.get("keyword") || "";
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState("newest");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+
+  useEffect(() => {
+  setKeyword(searchParams.get("keyword") || "");
+}, [searchParams]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,15 +69,9 @@ const [keyword, setKeyword] = useState(
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 py-10">
+        <h1 className="text-4xl font-bold mb-8">All Products</h1>
 
-        <h1 className="text-4xl font-bold mb-8">
-          All Products
-        </h1>
-
-        <SearchBar
-          keyword={keyword}
-          setKeyword={setKeyword}
-        />
+        <SearchBar keyword={keyword} setKeyword={setKeyword} />
 
         <ProductFilters
           category={category}
@@ -90,7 +90,6 @@ const [keyword, setKeyword] = useState(
         ) : (
           <ProductGrid products={products} />
         )}
-
       </div>
     </Layout>
   );

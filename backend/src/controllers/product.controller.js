@@ -59,6 +59,7 @@ export const createProduct = async (req, res) => {
    Get All Products
 ===================================== */
 
+
 export const getAllProducts = async (req, res) => {
   try {
     const {
@@ -69,60 +70,57 @@ export const getAllProducts = async (req, res) => {
       sort,
     } = req.query;
 
-    // Search
-    const filter = {};
+    const query = {};
 
+    // Search
     if (keyword) {
-      filter.name = {
+      query.name = {
         $regex: keyword,
         $options: "i",
       };
     }
 
-    // Category Filter
+    // Category
     if (category) {
-      filter.category = category;
+      query.category = category;
     }
 
-    // Price Filter
+    // Price
     if (minPrice || maxPrice) {
-      filter.price = {};
+      query.price = {};
 
-      if (minPrice) {
-        filter.price.$gte = Number(minPrice);
-      }
+      if (minPrice)
+        query.price.$gte = Number(minPrice);
 
-      if (maxPrice) {
-        filter.price.$lte = Number(maxPrice);
-      }
+      if (maxPrice)
+        query.price.$lte = Number(maxPrice);
     }
+
+    let products = Product.find(query).populate("category");
 
     // Sorting
-    let sortOption = { createdAt: -1 };
-
     if (sort === "price_asc") {
-      sortOption = { price: 1 };
+      products = products.sort({ price: 1 });
     }
 
     if (sort === "price_desc") {
-      sortOption = { price: -1 };
+      products = products.sort({ price: -1 });
     }
 
     if (sort === "newest") {
-      sortOption = { createdAt: -1 };
+      products = products.sort({ createdAt: -1 });
     }
 
-    const products = await Product.find(filter)
-      .populate("category")
-      .sort(sortOption);
+    const result = await products;
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
-      count: products.length,
-      products,
+      count: result.length,
+      products: result,
     });
+
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: error.message,
     });
