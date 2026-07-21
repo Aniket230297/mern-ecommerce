@@ -8,6 +8,7 @@ import {
 } from "../controllers/category.controller.js";
 
 import protect from "../middlewares/auth.middleware.js";
+import admin from "../middlewares/admin.middleware.js"
 
 const router = express.Router();
 
