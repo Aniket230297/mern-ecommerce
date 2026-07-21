@@ -5,17 +5,15 @@ import toast from "react-hot-toast";
 import AdminLayout from "../../components/layout/AdminLayout";
 import Loader from "../../components/common/Loader";
 
-import {
-  getOrderById,
-  updateOrderStatus,
-} from "../../services/order.service";
+import { getOrderById } from "../../services/order.service";
+import { updateOrderStatus } from "../../services/adminOrder.service";
 
-function OrderDetails() {
+function AdminOrderDetails() {
   const { id } = useParams();
 
   const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchOrder = async () => {
     try {
@@ -23,7 +21,6 @@ function OrderDetails() {
 
       setOrder(data.order);
       setStatus(data.order.orderStatus);
-
     } catch (error) {
       toast.error("Unable to load order");
     } finally {
@@ -39,16 +36,25 @@ function OrderDetails() {
     try {
       await updateOrderStatus(id, status);
 
-      toast.success("Order updated");
+      toast.success("Order Updated");
 
       fetchOrder();
 
     } catch (error) {
-      toast.error("Update failed");
+      toast.error(
+        error.response?.data?.message ||
+        "Unable to update order"
+      );
     }
   };
 
-  if (loading) return <Loader />;
+  if (loading) {
+    return (
+      <AdminLayout>
+        <Loader />
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
@@ -57,143 +63,112 @@ function OrderDetails() {
         Order Details
       </h1>
 
-      {/* Customer */}
+      <div className="bg-white rounded-xl shadow p-6 space-y-4">
 
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-
-        <h2 className="font-bold text-xl mb-4">
+        <h2 className="text-xl font-semibold">
           Customer
         </h2>
 
-        <p>
-          <strong>Name:</strong> {order.user.name}
-        </p>
+        <p>Name : {order.user.name}</p>
 
-        <p>
-          <strong>Email:</strong> {order.user.email}
-        </p>
+        <p>Email : {order.user.email}</p>
 
-      </div>
+        <hr />
 
-      {/* Shipping */}
-
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-
-        <h2 className="font-bold text-xl mb-4">
+        <h2 className="text-xl font-semibold">
           Shipping Address
         </h2>
 
-        <p>{order.shippingAddress.fullName}</p>
-
-        <p>{order.shippingAddress.phone}</p>
-
-        <p>{order.shippingAddress.street}</p>
-
         <p>
-          {order.shippingAddress.city},{" "}
-          {order.shippingAddress.state}
+          {order.shippingAddress.address}
         </p>
 
-        <p>{order.shippingAddress.country}</p>
+        <p>
+          {order.shippingAddress.city}
+        </p>
 
-        <p>{order.shippingAddress.postalCode}</p>
+        <p>
+          {order.shippingAddress.postalCode}
+        </p>
 
-      </div>
+        <p>
+          {order.shippingAddress.country}
+        </p>
 
-      {/* Products */}
+        <hr />
 
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-
-        <h2 className="font-bold text-xl mb-4">
+        <h2 className="text-xl font-semibold">
           Ordered Products
         </h2>
 
         {order.orderItems.map((item) => (
 
           <div
-            key={item.product._id}
-            className="flex items-center gap-4 border-b py-4"
+            key={item._id}
+            className="flex items-center gap-5 border-b py-4"
           >
 
             <img
               src={item.image}
               alt={item.name}
-              className="h-16 w-16 object-cover rounded"
+              className="w-20 h-20 object-cover rounded"
             />
 
-            <div className="flex-1">
+            <div>
 
-              <h3 className="font-semibold">
-                {item.name}
-              </h3>
+              <h3>{item.name}</h3>
 
               <p>
-                Qty: {item.quantity}
+                Qty : {item.quantity}
+              </p>
+
+              <p>
+                ₹ {item.price}
               </p>
 
             </div>
-
-            <p>
-              ₹ {item.price}
-            </p>
 
           </div>
 
         ))}
 
-      </div>
+        <hr />
 
-      {/* Summary */}
+        <div>
 
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <p>
+            Payment : {order.paymentMethod}
+          </p>
 
-        <p><strong>Items:</strong> ₹ {order.itemsPrice}</p>
+          <p>
+            Total : ₹ {order.totalPrice}
+          </p>
 
-        <p><strong>Shipping:</strong> ₹ {order.shippingPrice}</p>
+        </div>
 
-        <p><strong>Tax:</strong> ₹ {order.taxPrice}</p>
+        <div className="mt-6">
 
-        <p className="font-bold text-xl">
-          Total: ₹ {order.totalPrice}
-        </p>
+          <select
+            value={status}
+            onChange={(e) =>
+              setStatus(e.target.value)
+            }
+            className="border rounded p-3"
+          >
+            <option>Pending</option>
+            <option>Processing</option>
+            <option>Shipped</option>
+            <option>Delivered</option>
+          </select>
 
-        <p className="mt-3">
-          <strong>Payment:</strong> {order.paymentMethod}
-        </p>
+          <button
+            onClick={handleUpdate}
+            className="ml-4 bg-blue-600 text-white px-6 py-3 rounded-lg"
+          >
+            Update Status
+          </button>
 
-      </div>
-
-      {/* Status */}
-
-      <div className="bg-white rounded-lg shadow p-6">
-
-        <h2 className="font-bold mb-4">
-          Update Status
-        </h2>
-
-        <select
-          value={status}
-          onChange={(e) =>
-            setStatus(e.target.value)
-          }
-          className="border p-3 rounded w-full"
-        >
-
-          <option>Pending</option>
-          <option>Confirmed</option>
-          <option>Packed</option>
-          <option>Shipped</option>
-          <option>Delivered</option>
-          <option>Cancelled</option>
-
-        </select>
-
-        <button
-          onClick={handleUpdate}
-          className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg"
-        >
-          Update Status
-        </button>
+        </div>
 
       </div>
 
@@ -201,4 +176,4 @@ function OrderDetails() {
   );
 }
 
-export default OrderDetails;
+export default AdminOrderDetails;

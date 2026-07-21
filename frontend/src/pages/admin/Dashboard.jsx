@@ -48,7 +48,7 @@ function Dashboard() {
       <div className="bg-white rounded-xl shadow mt-10">
         <h2 className="text-xl font-bold p-6">Recent Orders</h2>
 
-        <table className="w-full">
+        <table className="w-full min-w-[700px]">
           <thead>
             <tr className="bg-gray-100">
               <th className="p-4">Customer</th>
@@ -60,91 +60,69 @@ function Dashboard() {
           </thead>
 
           <tbody>
-            {data.recentOrders.map((order) => (
-              <tr key={order._id} className="border-t text-center">
-                <td className="p-4">{order.user?.name}</td>
+            {data.recentOrders.length > 0 ? (
+              data.recentOrders.map((order) => (
+                <tr key={order._id} className="border-t text-center">
+                  <td className="p-4">{order.user?.name}</td>
 
-                <td>₹ {order.totalPrice}</td>
+                  <td>₹ {order.totalPrice}</td>
 
-                <td>{order.orderStatus}</td>
+                  <td>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium
+      ${
+        order.orderStatus === "Delivered"
+          ? "bg-green-100 text-green-700"
+          : order.orderStatus === "Shipped"
+            ? "bg-blue-100 text-blue-700"
+            : order.orderStatus === "Processing"
+              ? "bg-yellow-100 text-yellow-700"
+              : "bg-red-100 text-red-700"
+      }`}
+                    >
+                      {order.orderStatus}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="p-6 text-gray-500">
+                  No recent orders
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
       <div className="bg-white rounded-xl shadow mt-10">
+        <h2 className="text-xl font-bold p-6">Latest Products</h2>
 
-    <h2 className="text-xl font-bold p-6">
-
-        Latest Products
-
-    </h2>
-
-    <table className="w-full">
-
-        <thead>
-
+        <table className="w-full min-w-[700px]">
+          <thead>
             <tr className="bg-gray-100">
+              <th className="p-4">Product</th>
 
-                <th className="p-4">
+              <th>Price</th>
 
-                    Product
-
-                </th>
-
-                <th>
-
-                    Price
-
-                </th>
-
-                <th>
-
-                    Stock
-
-                </th>
-
+              <th>Stock</th>
             </tr>
+          </thead>
 
-        </thead>
-
-        <tbody>
-
+          <tbody>
             {data.recentProducts.map((product) => (
+              <tr key={product._id} className="border-t text-center">
+                <td className="p-4">{product.name}</td>
 
-                <tr
-                    key={product._id}
-                    className="border-t text-center"
-                >
+                <td>₹ {product.price}</td>
 
-                    <td className="p-4">
-
-                        {product.name}
-
-                    </td>
-
-                    <td>
-
-                        ₹ {product.price}
-
-                    </td>
-
-                    <td>
-
-                        {product.stock}
-
-                    </td>
-
-                </tr>
-
+                <td>{product.stock}</td>
+              </tr>
             ))}
-
-        </tbody>
-
-    </table>
-
-</div>
+          </tbody>
+        </table>
+      </div>
     </AdminLayout>
   );
 }

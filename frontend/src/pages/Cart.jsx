@@ -79,7 +79,9 @@ function Cart() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
-
+      <h1 className="text-3xl font-bold">
+        Shopping Cart ({cart.items.length} Items)
+      </h1>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Shopping Cart</h1>
 
@@ -92,16 +94,12 @@ function Cart() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-10">
-
         <div className="lg:col-span-2 space-y-6">
-
           {cart.items.map((item) => (
-
             <div
               key={item.product._id}
               className="flex flex-col sm:flex-row gap-4 bg-white shadow rounded-xl p-4"
             >
-
               <img
                 src={item.product.images[0]}
                 alt={item.product.name}
@@ -109,17 +107,13 @@ function Cart() {
               />
 
               <div className="flex-1">
-
-                <h2 className="font-semibold text-xl">
-                  {item.product.name}
-                </h2>
+                <h2 className="font-semibold text-xl">{item.product.name}</h2>
 
                 <p className="text-blue-600 font-bold mt-2">
                   ₹ {item.product.price}
                 </p>
 
                 <div className="flex items-center gap-3 mt-4">
-
                   <button
                     onClick={() => handleDecrease(item)}
                     className="px-3 py-1 border rounded"
@@ -130,12 +124,16 @@ function Cart() {
                   <span>{item.quantity}</span>
 
                   <button
+                    disabled={item.quantity >= item.product.stock}
                     onClick={() => handleIncrease(item)}
-                    className="px-3 py-1 border rounded"
+                    className={`px-3 py-1 border rounded ${
+                      item.quantity >= item.product.stock
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
                   >
                     +
                   </button>
-
                 </div>
 
                 <button
@@ -144,20 +142,13 @@ function Cart() {
                 >
                   Remove
                 </button>
-
               </div>
-
             </div>
-
           ))}
-
         </div>
 
         <div className="bg-white shadow rounded-xl p-6 h-fit">
-
-          <h2 className="text-2xl font-bold mb-6">
-            Order Summary
-          </h2>
+          <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
 
           <div className="flex justify-between mb-3">
             <span>Subtotal</span>
@@ -171,22 +162,26 @@ function Cart() {
 
           <hr className="my-4" />
 
-          <div className="flex justify-between text-xl font-bold">
-            <span>Total</span>
-            <span>₹ {cart.totalPrice}</span>
-          </div>
+          <p className="text-blue-600 font-bold mt-2">
+            ₹ {item.product.price} × {item.quantity}
+          </p>
+
+          <p className="font-semibold">
+            Total : ₹ {item.product.price * item.quantity}
+          </p>
 
           <Link
             to="/checkout"
-            className="block text-center mt-6 bg-blue-600 text-white py-3 rounded-lg"
+            className={`block text-center mt-6 py-3 rounded-lg ${
+              cart.items.length === 0
+                ? "bg-gray-400 pointer-events-none"
+                : "bg-blue-600 text-white"
+            }`}
           >
             Proceed to Checkout
           </Link>
-
         </div>
-
       </div>
-
     </div>
   );
 }

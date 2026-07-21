@@ -61,7 +61,60 @@ export const createProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate("category");
+    const {
+      keyword,
+      category,
+      minPrice,
+      maxPrice,
+      sort,
+    } = req.query;
+
+    // Search
+    const filter = {};
+
+    if (keyword) {
+      filter.name = {
+        $regex: keyword,
+        $options: "i",
+      };
+    }
+
+    // Category Filter
+    if (category) {
+      filter.category = category;
+    }
+
+    // Price Filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+
+      if (minPrice) {
+        filter.price.$gte = Number(minPrice);
+      }
+
+      if (maxPrice) {
+        filter.price.$lte = Number(maxPrice);
+      }
+    }
+
+    // Sorting
+    let sortOption = { createdAt: -1 };
+
+    if (sort === "price_asc") {
+      sortOption = { price: 1 };
+    }
+
+    if (sort === "price_desc") {
+      sortOption = { price: -1 };
+    }
+
+    if (sort === "newest") {
+      sortOption = { createdAt: -1 };
+    }
+
+    const products = await Product.find(filter)
+      .populate("category")
+      .sort(sortOption);
 
     return res.status(200).json({
       success: true,

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { getMyOrders } from "../services/order.service";
+
 import Loader from "../components/common/Loader";
 import EmptyState from "../components/common/EmptyState";
 
@@ -9,26 +10,25 @@ function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchOrders = async () => {
-    try {
-      const data = await getMyOrders();
-      setOrders(data.orders);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await getMyOrders();
+        setOrders(data.orders);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchOrders();
   }, []);
 
   if (loading) return <Loader />;
 
-  if (orders.length === 0) {
+  if (orders.length === 0)
     return <EmptyState message="No orders found." />;
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
@@ -46,37 +46,46 @@ function MyOrders() {
             className="bg-white shadow rounded-xl p-6"
           >
 
-            <div className="flex flex-col md:flex-row md:justify-between gap-4">
+            <div className="flex justify-between flex-wrap gap-3">
 
               <div>
-                <p>
-                  <strong>Order ID:</strong> {order._id}
+
+                <p className="font-semibold">
+                  Order ID
                 </p>
 
-                <p>
-                  <strong>Date:</strong>{" "}
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </p>
+                <p>{order._id}</p>
 
-                <p>
-                  <strong>Total:</strong> ₹ {order.totalPrice}
-                </p>
-
-                <p>
-                  <strong>Status:</strong> {order.orderStatus}
-                </p>
               </div>
 
               <div>
-                <Link
-                  to={`/orders/${order._id}`}
-                  className="bg-blue-600 text-white px-5 py-2 rounded-lg"
-                >
-                  View Details
-                </Link>
+
+                <p>Status</p>
+
+                <span className="font-semibold">
+                  {order.orderStatus}
+                </span>
+
+              </div>
+
+              <div>
+
+                <p>Total</p>
+
+                <span>
+                  ₹ {order.totalPrice}
+                </span>
+
               </div>
 
             </div>
+
+            <Link
+              to={`/orders/${order._id}`}
+              className="inline-block mt-5 bg-blue-600 text-white px-5 py-2 rounded"
+            >
+              View Details
+            </Link>
 
           </div>
 

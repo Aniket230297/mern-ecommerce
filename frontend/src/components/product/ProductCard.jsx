@@ -3,30 +3,34 @@ import { Link } from "react-router-dom";
 function ProductCard({ product }) {
   return (
     <div className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
-      <img
-        src={product.images?.[0]}
-        alt={product.name}
-        className="w-full h-56 object-cover"
-      />
+      <Link to={`/product/${product._id}`}>
+        <img
+          src={product.images?.[0]}
+          alt={product.name}
+          className="w-full h-60 object-cover"
+        />
+      </Link>
 
       <div className="p-4">
-        <h2 className="text-lg font-semibold line-clamp-1">{product.name}</h2>
+        <h2 className="text-lg font-semibold line-clamp-1">
+          {product.name}
+        </h2>
 
-        <p className="text-gray-500 mt-2">₹ {product.price}</p>
+        <p className="text-gray-500 text-sm mt-2 line-clamp-2">
+          {product.description}
+        </p>
 
-        <p className="text-sm text-gray-600 mt-2">Stock : {product.stock}</p>
+        <div className="flex justify-between items-center mt-5">
+          <span className="text-blue-600 text-xl font-bold">
+            ₹ {product.price}
+          </span>
 
-        <div className="mt-4 flex gap-2">
           <Link
             to={`/product/${product._id}`}
-            className="flex-1 text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-900"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
           >
-            View Details
+            View
           </Link>
-
-          <button className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
-            Add to Cart
-          </button>
         </div>
       </div>
     </div>

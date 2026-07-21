@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
+import toast from "react-hot-toast";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -25,12 +27,15 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user");
 
     setUser(null);
+
+    toast.success("Logged out successfully");
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         login,
         logout,
       }}
