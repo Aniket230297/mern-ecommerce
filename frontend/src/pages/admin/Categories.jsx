@@ -49,13 +49,7 @@ function Categories() {
     );
   }
 
-  if (categories.length === 0) {
-    return (
-      <AdminLayout>
-        <EmptyState message="No categories found." />
-      </AdminLayout>
-    );
-  }
+
 
   return (
     <AdminLayout>

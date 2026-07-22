@@ -24,24 +24,28 @@ function Login() {
     e.preventDefault();
 
     try {
-      const { data } = await API.post("/login/login", form);
+      const { data } = await API.post("/auth/login", form);
 
       login(data.user, data.token);
 
       alert("Login Successful");
 
-      navigate("/");
+      console.log("Logged in user:", data.user);
+
+      if (data.user?.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       alert(error.response?.data?.message || "Login Failed");
     }
-  };
+  }; 
 
   return (
     <div className="flex items-center justify-center min-h-[80vh] bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center mb-8">
-          Login
-        </h1>
+        <h1 className="text-3xl font-bold text-center mb-8">Login</h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <input

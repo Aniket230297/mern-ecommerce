@@ -44,6 +44,7 @@ export const createCategory = async (req, res) => {
   }
 };
 
+
 /* ===============================
    Get All Categories
 ================================ */

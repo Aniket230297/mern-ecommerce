@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function CategoryForm({ initialData = {}, onSubmit }) {
+function CategoryForm({ initialData , onSubmit }) {
 
   const [formData, setFormData] = useState({
     name: "",
@@ -9,15 +9,16 @@ function CategoryForm({ initialData = {}, onSubmit }) {
     isActive: true,
   });
 
-  useEffect(() => {
-    setFormData({
-      name: initialData.name || "",
-      description: initialData.description || "",
-      image: initialData.image?.[0] || "",
-      isActive:
-        initialData.isActive ?? true,
-    });
-  }, [initialData]);
+ useEffect(() => {
+  if (!initialData) return;
+
+  setFormData({
+    name: initialData.name || "",
+    description: initialData.description || "",
+    image: initialData.image?.[0] || "",
+    isActive: initialData.isActive ?? true,
+  });
+}, [initialData]);
 
   const handleChange = (e) => {
 

@@ -147,8 +147,11 @@ function Cart() {
           ))}
         </div>
 
+  {cart.items.map((item) => (
         <div className="bg-white shadow rounded-xl p-6 h-fit">
+          
           <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
+          
 
           <div className="flex justify-between mb-3">
             <span>Subtotal</span>
@@ -181,6 +184,7 @@ function Cart() {
             Proceed to Checkout
           </Link>
         </div>
+  ))}
       </div>
     </div>
   );
