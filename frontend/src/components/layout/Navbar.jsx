@@ -234,6 +234,14 @@ function Navbar() {
           </Link>
 
           <Link
+            to="/products"
+            className="block px-4 py-3"
+            onClick={() => setOpen(false)}
+          >
+            Products
+          </Link>
+
+          <Link
             className="block px-4 py-3"
             to="/cart"
             onClick={() => setOpen(false)}
