@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const images = [
   "/images/banner4.jpg",
@@ -43,13 +44,16 @@ function Hero() {
           </h1>
 
           <p className="mt-6 text-xl text-gray-200">
-            Discover the best electronics, fashion and accessories at
-            unbeatable prices.
+            Discover the best electronics, fashion and accessories at unbeatable
+            prices.
           </p>
 
-          <button className="mt-8 bg-[#4361EE] hover:bg-[#3A56D4] text-white px-8 py-3 rounded-xl font-semibold transition">
-            Shop Now
-          </button>
+         <Link
+  to="/products"
+  className="inline-block mt-6 bg-[#4361EE] hover:bg-[#3A56D4] text-white px-8 py-3 rounded-xl font-semibold transition"
+>
+  Shop Now
+</Link>
 
           {/* Dots */}
           <div className="flex gap-3 mt-8">

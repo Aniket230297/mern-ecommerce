@@ -44,7 +44,7 @@ function Login() {
         replace: true,
       });
     } catch (error) {
-      alert(error.response?.data?.message || "Login Failed");
+      toast.error(error.response?.data?.message || "Login Failed");
     }
   };
 
