@@ -4,20 +4,22 @@ import { Menu, X, ShoppingCart, Search } from "lucide-react";
 import { FaUser } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
   const { user, logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
   const [keyword, setKeyword] = useState("");
+  const { cartCount } = useCart();
 
   const navigate = useNavigate();
 
-const handleLogout = () => {
+  const handleLogout = () => {
     setShowMenu(false);
     logout();
-    navigate("/login");
-};  
+    navigate("/");
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow">
@@ -25,7 +27,7 @@ const handleLogout = () => {
         <div className="h-16 flex justify-between items-center">
           {/* Logo */}
 
-          <Link to="/" className="text-2xl font-bold text-blue-600">
+          <Link to="/" className="text-2xl font-bold text-blue-500">
             ShopSphere
           </Link>
 
@@ -58,7 +60,7 @@ const handleLogout = () => {
                     setKeyword("");
                   }
                 }}
-                className="px-4 bg-blue-600 text-white"
+                className="px-4 bg-[#4361EE] hover:bg-[#3A56D4] text-white"
               >
                 <Search size={20} />
               </button>
@@ -70,14 +72,33 @@ const handleLogout = () => {
           <div className="hidden md:flex items-center gap-6">
             <Link to="/">Home</Link>
 
+            <Link to="/products">Products</Link>
+
             <Link to="/cart">
-              <ShoppingCart />
+              <div className="relative">
+                <ShoppingCart size={24} />
+
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
             </Link>
 
             {!user ? (
-              <Link to="/login">
-                <FaUser size={20} />
-              </Link>
+              <div className="flex items-center gap-4">
+                <Link to="/login" className="hover:text-blue-600 font-medium">
+                  Login
+                </Link>
+
+                <Link
+                  to="/register"
+                  className="px-5 py-2 border border-black rounded-lg bg-transparent text-black font-medium hover:bg-black hover:text-white transition-all duration-300"
+                >
+                  Register
+                </Link>
+              </div>
             ) : (
               <div className="relative">
                 <button
@@ -217,7 +238,7 @@ const handleLogout = () => {
             to="/cart"
             onClick={() => setOpen(false)}
           >
-            Cart
+            Cart ({cartCount})
           </Link>
 
           {user ? (
@@ -279,9 +300,23 @@ const handleLogout = () => {
               </button>
             </>
           ) : (
-            <Link className="block px-4 py-3" to="/login">
-              Login
-            </Link>
+            <>
+              <Link
+                className="block px-4 py-3"
+                to="/login"
+                onClick={() => setOpen(false)}
+              >
+                Login
+              </Link>
+
+              <Link
+                className="block px-4 py-3"
+                to="/register"
+                onClick={() => setOpen(false)}
+              >
+                Register
+              </Link>
+            </>
           )}
         </div>
       )}

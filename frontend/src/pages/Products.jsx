@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-
 import Loader from "../components/common/Loader";
 import EmptyState from "../components/common/EmptyState";
 
@@ -21,46 +20,50 @@ function Products() {
 
   const [searchParams] = useSearchParams();
 
-  const [keyword, setKeyword] = useState(
-    searchParams.get("keyword") || ""
-  );;
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
   // const keyword = searchParams.get("keyword") || "";
   const [category, setCategory] = useState("");
   const [sort, setSort] = useState("newest");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
-  useEffect(() => {
-  setKeyword(searchParams.get("keyword") || "");
-}, [searchParams]);
-
+  const [filterLoading, setFilterLoading] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    setKeyword(searchParams.get("keyword") || "");
+  }, [searchParams]);
 
-      try {
-        const [productData, categoryData] = await Promise.all([
-          getProducts({
-            keyword,
-            category,
-            sort,
-            minPrice,
-            maxPrice,
-          }),
-          getCategories(),
-        ]);
-
-        setProducts(productData.products);
-        setCategories(categoryData.categories);
-      } catch (error) {
-        toast.error("Unable to load products.");
-      } finally {
-        setLoading(false);
+  const fetchData = async (firstLoad = false) => {
+    try {
+      if (firstLoad) {
+        setLoading(true);
+      } else {
+        setFilterLoading(true);
       }
-    };
 
-    fetchData();
+      const [productData, categoryData] = await Promise.all([
+        getProducts({
+          keyword,
+          category,
+          sort,
+          minPrice,
+          maxPrice,
+        }),
+        getCategories(),
+      ]);
+
+      setProducts(productData.products);
+      setCategories(categoryData.categories);
+    } catch {
+      toast.error("Unable to load products.");
+    } finally {
+      setLoading(false);
+      setFilterLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(loading);
   }, [keyword, category, sort, minPrice, maxPrice]);
 
   if (loading) return <Loader />;

@@ -80,10 +80,12 @@ function Cart() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold">
-        Shopping Cart ({cart.items.length} Items)
+        {/* Shopping Cart ({cart.items.length} Items) */}
       </h1>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Shopping Cart</h1>
+        <h1 className="text-3xl font-bold">
+          Shopping Cart ({cart.items.length} Items)
+        </h1>
 
         <button
           onClick={handleClearCart}
@@ -98,7 +100,7 @@ function Cart() {
           {cart.items.map((item) => (
             <div
               key={item.product._id}
-              className="flex flex-col sm:flex-row gap-4 bg-white shadow rounded-xl p-4"
+              className="flex flex-col sm:flex-row gap-4 bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-5"
             >
               <img
                 src={item.product.images[0]}
@@ -147,44 +149,68 @@ function Cart() {
           ))}
         </div>
 
-  {cart.items.map((item) => (
-        <div className="bg-white shadow rounded-xl p-6 h-fit">
-          
+        <div className="bg-white shadow-lg rounded-2xl p-6 h-fit sticky top-24">
           <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
-          
 
-          <div className="flex justify-between mb-3">
+          <div className="flex justify-between mb-4 text-gray-600">
+            <span>Items</span>
+            <span>{cart.items.length}</span>
+          </div>
+
+          <div className="flex justify-between mb-4 text-gray-600">
             <span>Subtotal</span>
-            <span>₹ {cart.totalPrice}</span>
+
+            <span>
+              ₹{" "}
+              {cart.items.reduce(
+                (total, item) => total + item.product.price * item.quantity,
+                0,
+              )}
+            </span>
           </div>
 
-          <div className="flex justify-between mb-3">
+          <div className="flex justify-between mb-4 text-gray-600">
             <span>Shipping</span>
-            <span>Free</span>
+
+            <span className="text-green-600 font-semibold">Free</span>
           </div>
 
-          <hr className="my-4" />
+          <hr className="my-5" />
 
-          <p className="text-blue-600 font-bold mt-2">
-            ₹ {item.product.price} × {item.quantity}
-          </p>
+          {cart.items.map((item) => (
+            <div
+              key={item.product._id}
+              className="flex justify-between text-sm mb-3"
+            >
+              <span className="truncate mr-3">
+                {item.product.name} × {item.quantity}
+              </span>
 
-          <p className="font-semibold">
-            Total : ₹ {item.product.price * item.quantity}
-          </p>
+              <span>₹ {item.product.price * item.quantity}</span>
+            </div>
+          ))}
+
+          <hr className="my-5" />
+
+          <div className="flex justify-between text-2xl font-bold">
+            <span>Total</span>
+
+            <span className="text-[#4361EE]">
+              ₹{" "}
+              {cart.items.reduce(
+                (total, item) => total + item.product.price * item.quantity,
+                0,
+              )}
+            </span>
+          </div>
 
           <Link
             to="/checkout"
-            className={`block text-center mt-6 py-3 rounded-lg ${
-              cart.items.length === 0
-                ? "bg-gray-400 pointer-events-none"
-                : "bg-blue-600 text-white"
-            }`}
+            className="block mt-6 text-center bg-[#4361EE] hover:bg-[#3A56D4] text-white py-3 rounded-xl font-semibold transition"
           >
             Proceed to Checkout
           </Link>
         </div>
-  ))}
       </div>
     </div>
   );

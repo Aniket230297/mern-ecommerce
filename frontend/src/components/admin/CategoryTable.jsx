@@ -136,7 +136,7 @@ function CategoryTable() {
 
                   <Link
                     to={`/admin/categories/edit/${category._id}`}
-                    className="bg-yellow-500 text-white px-3 py-1 rounded"
+                    className="bg-amber-500 text-white px-3 py-1 rounded"
                   >
                     Edit
                   </Link>
@@ -145,7 +145,7 @@ function CategoryTable() {
                     onClick={() =>
                       handleDelete(category._id)
                     }
-                    className="bg-red-600 text-white px-3 py-1 rounded"
+                    className="bg-red-500 text-white px-3 py-1 rounded"
                   >
                     Delete
                   </button>

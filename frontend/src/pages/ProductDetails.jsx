@@ -8,6 +8,7 @@ import EmptyState from "../components/common/EmptyState";
 
 import toast from "react-hot-toast";
 import { addToCart } from "../services/cart.service";
+import { useCart } from "../context/CartContext";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -15,6 +16,8 @@ function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [cartLoading, setCartLoading] = useState(false);
+  const { fetchCart } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -32,18 +35,19 @@ function ProductDetails() {
     fetchProduct();
   }, [id]);
 
-  
   const handleAddToCart = async () => {
-  try {
-    await addToCart(product._id, quantity);
+    setCartLoading(true);
+    try {
+      await addToCart(product._id, quantity);
+        await fetchCart();
 
-    toast.success("Product added to cart");
-  } catch (error) {
-    toast.error(
-      error.response?.data?.message || "Failed to add product"
-    );
-  }
-};
+      toast.success("Product added to cart");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to add product");
+    } finally {
+      setCartLoading(false);
+    }
+  };
 
   if (loading) return <Loader />;
 
@@ -91,9 +95,22 @@ function ProductDetails() {
 
           <button
             onClick={handleAddToCart}
-            className="mt-8 w-full md:w-auto bg-blue-600 text-white px-10 py-3 rounded-lg hover:bg-blue-700"
+            disabled={cartLoading}
+            className={`mt-8 w-full md:w-auto px-10 py-3 rounded-lg text-white transition
+    ${
+      cartLoading
+        ? "bg-blue-400 cursor-not-allowed"
+        : "bg-blue-600 hover:bg-blue-700"
+    }`}
           >
-            Add To Cart
+            {cartLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Adding...</span>
+              </div>
+            ) : (
+              "Add To Cart"
+            )}
           </button>
         </div>
       </div>

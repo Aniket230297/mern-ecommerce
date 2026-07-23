@@ -1,6 +1,6 @@
 function StatCard({ title, value }) {
   return (
-    <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl shadow-lg p-6">
+    <div className="bg-violet-500  text-white rounded-xl shadow-lg p-6">
 
       <p className="text-lg">
         {title}
