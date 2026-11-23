@@ -70,12 +70,29 @@ export const getAllProducts = async (req, res) => {
       sort,
     } = req.query;
 
+    // Support both paginated and all-products requests
+    const isAll = req.query.limit === "all";
+
+    const page = Math.max(
+      1,
+      parseInt(req.query.page, 10) || 1
+    );
+
+    const limit = isAll
+      ? null
+      : Math.min(
+          50,
+          Math.max(1, parseInt(req.query.limit, 10) || 8)
+        );
+
+    const skip = isAll ? 0 : (page - 1) * limit;
+
     const query = {};
 
     // Search
-    if (keyword) {
+    if (keyword?.trim()) {
       query.name = {
-        $regex: keyword,
+        $regex: keyword.trim(),
         $options: "i",
       };
     }
@@ -85,47 +102,72 @@ export const getAllProducts = async (req, res) => {
       query.category = category;
     }
 
-    // Price
+    // Price filter
     if (minPrice || maxPrice) {
       query.price = {};
 
-      if (minPrice)
+      if (minPrice !== "" && minPrice !== undefined) {
         query.price.$gte = Number(minPrice);
+      }
 
-      if (maxPrice)
+      if (maxPrice !== "" && maxPrice !== undefined) {
         query.price.$lte = Number(maxPrice);
+      }
     }
-
-    let products = Product.find(query).populate("category");
 
     // Sorting
+    let sortOptions = {};
+
     if (sort === "price_asc") {
-      products = products.sort({ price: 1 });
+      sortOptions = { price: 1 };
+    } else if (sort === "price_desc") {
+      sortOptions = { price: -1 };
+    } else if (sort === "newest") {
+      sortOptions = { createdAt: -1 };
     }
 
-    if (sort === "price_desc") {
-      products = products.sort({ price: -1 });
+    // Build query
+    let productQuery = Product.find(query)
+      .populate("category")
+      .sort(sortOptions);
+
+    if (!isAll) {
+      productQuery = productQuery
+        .skip(skip)
+        .limit(limit);
     }
 
-    if (sort === "newest") {
-      products = products.sort({ createdAt: -1 });
-    }
+    const [products, totalProducts] = await Promise.all([
+      productQuery,
+      Product.countDocuments(query),
+    ]);
 
-    const result = await products;
+    const totalPages = isAll
+      ? 1
+      : Math.ceil(totalProducts / limit);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      count: result.length,
-      products: result,
+      count: products.length,
+      products,
+      pagination: {
+        currentPage: page,
+        limit: isAll ? "all" : limit,
+        totalProducts,
+        totalPages,
+        hasNextPage: !isAll && page < totalPages,
+        hasPrevPage: !isAll && page > 1,
+      },
     });
-
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
+
 
 /* =====================================
    Get Single Product
